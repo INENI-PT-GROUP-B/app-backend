@@ -1,0 +1,3 @@
+# CODEOWNERS — PRs require review from rl during app development
+# Tracking: INENI-PT-GROUP-B/platform#49
+* @ronaldley
