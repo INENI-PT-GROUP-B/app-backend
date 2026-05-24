@@ -1,0 +1,6 @@
+apiVersion: v2
+name: app-chart
+description: Deploys one tenant's property-management app stack (backend, frontend, ingress).
+type: application
+version: 0.1.0
+appVersion: "0.1.0"

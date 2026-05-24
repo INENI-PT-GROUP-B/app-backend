@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "app-chart.fullname" . }}-frontend-config
+  labels:
+    {{- include "app-chart.labels" . | nindent 4 }}
+    app.kubernetes.io/component: frontend
+data:
+  # Runtime config contract: the SPA reads the global `window.APP_CONFIG` from
+  # /config.js at load time. Path-based routing keeps the backend on the same
+  # host under /api, so apiBaseUrl is always "/api". The frontend image must
+  # serve this file statically and must NOT also write /config.js via an
+  # entrypoint (this read-only mount provides it).
+  config.js: |
+    window.APP_CONFIG = { apiBaseUrl: "/api" };

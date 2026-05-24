@@ -1,0 +1,54 @@
+# Identity of the tenant this release belongs to. Set by the Crossplane
+# Composition; defaults to the Helm release name when empty.
+tenant: ""
+# Fully-qualified host for the tenant, e.g. "demo.fhuebung.lol".
+host: ""
+
+image:
+  backend:
+    repository: ghcr.io/ineni-pt-group-b/app-backend
+    tag: ""
+  frontend:
+    repository: ghcr.io/ineni-pt-group-b/app-frontend
+    tag: ""
+
+# Image pull secret(s) for the PRIVATE frontend image, synced per namespace by
+# the External Secrets Operator. Applied to the frontend Deployment only — the
+# backend image is public and needs no pull secret.
+imagePullSecrets:
+  - ghcr-pull-secret
+
+ingress:
+  className: traefik
+  tls:
+    secretName: wildcard-fhuebung-lol
+  # Reference to the per-tenant Traefik BasicAuth middleware, e.g.
+  # "tenant-demo-basicauth@kubernetescrd". Created by the Crossplane
+  # Composition; when empty the middleware annotation is omitted.
+  basicAuthMiddlewareRef: ""
+
+# Backend database connection. The Composition points this at the
+# CloudNativePG-generated secret in the tenant namespace.
+db:
+  secretName: ""
+  urlKey: uri
+
+backend:
+  replicas: 1
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 250m
+      memory: 256Mi
+
+frontend:
+  replicas: 1
+  resources:
+    requests:
+      cpu: 25m
+      memory: 32Mi
+    limits:
+      cpu: 100m
+      memory: 128Mi
