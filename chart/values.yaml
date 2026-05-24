@@ -12,8 +12,9 @@ image:
     repository: ghcr.io/ineni-pt-group-b/app-frontend
     tag: ""
 
-# Image pull secret(s) for the private frontend image, synced per namespace by
-# the External Secrets Operator.
+# Image pull secret(s) for the PRIVATE frontend image, synced per namespace by
+# the External Secrets Operator. Applied to the frontend Deployment only — the
+# backend image is public and needs no pull secret.
 imagePullSecrets:
   - ghcr-pull-secret
 

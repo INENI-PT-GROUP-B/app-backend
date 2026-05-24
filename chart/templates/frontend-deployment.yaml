@@ -23,7 +23,7 @@ spec:
       {{- end }}
       containers:
         - name: frontend
-          image: "{{ .Values.image.frontend.repository }}:{{ .Values.image.frontend.tag }}"
+          image: "{{ .Values.image.frontend.repository }}:{{ required "image.frontend.tag is required" .Values.image.frontend.tag }}"
           ports:
             - name: http
               containerPort: 80

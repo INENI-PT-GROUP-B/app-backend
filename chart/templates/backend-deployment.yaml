@@ -15,15 +15,9 @@ spec:
       labels:
         {{- include "app-chart.backendSelectorLabels" . | nindent 8 }}
     spec:
-      {{- with .Values.imagePullSecrets }}
-      imagePullSecrets:
-        {{- range . }}
-        - name: {{ . }}
-        {{- end }}
-      {{- end }}
       containers:
         - name: backend
-          image: "{{ .Values.image.backend.repository }}:{{ .Values.image.backend.tag }}"
+          image: "{{ .Values.image.backend.repository }}:{{ required "image.backend.tag is required" .Values.image.backend.tag }}"
           ports:
             - name: http
               containerPort: 3000
@@ -33,19 +27,26 @@ spec:
             - name: DATABASE_URL
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.db.secretName }}
+                  name: {{ required "db.secretName is required" .Values.db.secretName }}
                   key: {{ .Values.db.urlKey }}
+          # Migrations run on startup before the server listens; the startupProbe
+          # holds liveness/readiness off until /healthz is up, so a slow
+          # migration cannot trigger a liveness restart loop.
+          startupProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            periodSeconds: 10
+            failureThreshold: 30
           livenessProbe:
             httpGet:
               path: /healthz
               port: http
-            initialDelaySeconds: 10
             periodSeconds: 15
           readinessProbe:
             httpGet:
               path: /healthz
               port: http
-            initialDelaySeconds: 5
             periodSeconds: 10
           resources:
             {{- toYaml .Values.backend.resources | nindent 12 }}
