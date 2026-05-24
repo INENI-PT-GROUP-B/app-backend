@@ -8,9 +8,6 @@ Node.js 22 (LTS), TypeScript, [Fastify](https://fastify.dev/), and
 [Drizzle ORM](https://orm.drizzle.team/). The service is packaged as a
 multi-stage Alpine container image.
 
-> This is the skeleton. The `properties` schema, database migrations,
-> `/healthz`, the CRUD API, and the Helm chart are added in later changes.
-
 ## Prerequisites
 
 - **Node.js 22.22.3** — the exact version is pinned in [`.nvmrc`](./.nvmrc).
@@ -38,8 +35,8 @@ npm install
 npm run dev
 ```
 
-The server then listens on `http://localhost:3000/` and answers the placeholder
-route `GET /`.
+The server listens on `http://localhost:3000/` and serves the API below;
+database migrations run automatically on startup.
 
 ## Scripts
 
@@ -62,3 +59,23 @@ The local-development `DATABASE_URL` in `.env.example`
 (`postgresql://app:app@localhost:5432/app`) matches the Postgres service in
 [`docker-compose.yml`](./docker-compose.yml), which is for **local development
 only** and is not part of any deployment path.
+
+## API
+
+Authentication is handled at the ingress (Traefik BasicAuth); the API itself is
+unauthenticated. Database migrations are applied automatically on startup.
+
+| Method   | Path                  | Description                                          | Success |
+| -------- | --------------------- | ---------------------------------------------------- | ------- |
+| `GET`    | `/healthz`            | Readiness: 200 once migrations ran and the DB is up. | `200`   |
+| `GET`    | `/api/properties`     | List all properties.                                 | `200`   |
+| `POST`   | `/api/properties`     | Create a property.                                   | `201`   |
+| `GET`    | `/api/properties/:id` | Fetch a property by id.                              | `200`   |
+| `PATCH`  | `/api/properties/:id` | Update fields of a property.                         | `200`   |
+| `DELETE` | `/api/properties/:id` | Delete a property.                                   | `204`   |
+
+Invalid request bodies and malformed ids return `400`; unknown ids return `404`.
+
+A property has `label`, `street`, `zip`, `city` (strings), `sizeSqm` and
+`rentEur` (numbers ≥ 0), an optional `notes` string, and server-managed `id`
+(UUID), `createdAt` and `updatedAt` (timestamps).
