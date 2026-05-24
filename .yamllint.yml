@@ -13,3 +13,5 @@ rules:
 
 ignore: |
   node_modules/
+  # Helm templates contain Go-template syntax ({{ ... }}) and are not valid YAML.
+  chart/templates/
