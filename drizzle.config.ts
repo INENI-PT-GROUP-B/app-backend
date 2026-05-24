@@ -1,7 +1,7 @@
 import { defineConfig } from "drizzle-kit";
 
-// The schema file is added in a later change; drizzle-kit only reads it when
-// generating or applying migrations, neither of which runs in this skeleton.
+// Used by drizzle-kit to generate SQL migrations from src/db/schema.ts into
+// ./drizzle. Migrations are applied at runtime by runMigrations() in src/db.
 export default defineConfig({
   dialect: "postgresql",
   schema: "./src/db/schema.ts",
