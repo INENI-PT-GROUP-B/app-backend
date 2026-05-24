@@ -1,3 +1,6 @@
-# CODEOWNERS — PRs require review from rl during app development
+# CODEOWNERS — every PR to main needs a code-owner review (enforced by the
+# "main-protection" ruleset). rl owns app development; am is a second owner so
+# rl's own PRs can be reviewed by another owner. A single owner would self-block,
+# since an author cannot review their own PR.
 # Tracking: INENI-PT-GROUP-B/platform#49
-* @ronaldley
+* @ronaldley @mlexinho27
