@@ -79,3 +79,19 @@ Invalid request bodies and malformed ids return `400`; unknown ids return `404`.
 A property has `label`, `street`, `zip`, `city` (strings), `sizeSqm` and
 `rentEur` (numbers ≥ 0), an optional `notes` string, and server-managed `id`
 (UUID), `createdAt` and `updatedAt` (timestamps).
+
+## Releases
+
+Releases are cut by pushing a `vX.Y.Z` git tag. On a tag, the
+[`Release`](./.github/workflows/release.yml) workflow:
+
+- builds and pushes the backend image to
+  `ghcr.io/ineni-pt-group-b/app-backend` (tagged `vX.Y.Z`);
+- packages `chart/` and pushes it to `ghcr.io/ineni-pt-group-b/app-chart`
+  as an OCI artifact, with the chart version set to the tag without its `v`
+  prefix (`0.1.0` for tag `v0.1.0`) to match the `values/app-version.yaml`
+  convention in `platform-gitops`.
+
+Both steps authenticate with the built-in `GITHUB_TOKEN`; no long-lived
+credentials are used. Pushes to `main` without a tag build the image only
+(tagged `sha-<short>`); the chart is published on tags only.
