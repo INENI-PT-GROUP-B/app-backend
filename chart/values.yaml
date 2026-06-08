@@ -21,7 +21,7 @@ imagePullSecrets:
 ingress:
   className: traefik
   tls:
-    secretName: wildcard-fhuebung-lol
+    secretName: wildcard-fhuebung-lol-tls
   # Reference to the per-tenant Traefik BasicAuth middleware, e.g.
   # "tenant-demo-basicauth@kubernetescrd". Created by the Crossplane
   # Composition; when empty the middleware annotation is omitted.
