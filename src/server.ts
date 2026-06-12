@@ -23,4 +23,29 @@ const start = async (): Promise<void> => {
   }
 };
 
+// Kubernetes sends SIGTERM on every rolling update and eviction; without a
+// handler Node exits immediately and drops in-flight requests. app.close()
+// stops accepting new connections and waits for in-flight requests, then the
+// pg pool is released. SIGINT covers local Ctrl-C. The guard keeps a repeated
+// signal during shutdown from ending the pool twice (which would throw and
+// turn a clean shutdown into a non-zero exit).
+let shuttingDown = false;
+
+const shutdown = async (signal: NodeJS.Signals): Promise<void> => {
+  if (shuttingDown) return;
+  shuttingDown = true;
+  app.log.info({ signal }, "shutting down");
+  try {
+    await app.close();
+    await pool.end();
+    process.exit(0);
+  } catch (err) {
+    app.log.error({ err }, "graceful shutdown failed");
+    process.exit(1);
+  }
+};
+
+process.on("SIGTERM", (signal) => void shutdown(signal));
+process.on("SIGINT", (signal) => void shutdown(signal));
+
 void start();
