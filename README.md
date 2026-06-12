@@ -76,9 +76,9 @@ unauthenticated. Database migrations are applied automatically on startup.
 
 Invalid request bodies and malformed ids return `400`; unknown ids return `404`.
 
-A property has `label`, `street`, `zip`, `city` (strings), `sizeSqm` and
-`rentEur` (numbers ≥ 0), an optional `notes` string, and server-managed `id`
-(UUID), `createdAt` and `updatedAt` (timestamps).
+A property has `label`, `street`, `zip`, `city` (strings), `sizeSqm` (a
+number > 0), `rentEur` (a number ≥ 0), an optional `notes` string, and
+server-managed `id` (UUID), `createdAt` and `updatedAt` (timestamps).
 
 ## Releases
 
