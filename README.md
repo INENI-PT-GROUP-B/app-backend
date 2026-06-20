@@ -80,6 +80,37 @@ A property has `label`, `street`, `zip`, `city` (strings), `sizeSqm` (a
 number > 0), `rentEur` (a number ≥ 0), an optional `notes` string, and
 server-managed `id` (UUID), `createdAt` and `updatedAt` (timestamps).
 
+## Chart
+
+The Helm chart in [`chart/`](./chart) packages one tenant's full app
+stack — backend and frontend Deployments + Services, plus a Traefik
+Ingress — and is published as the OCI artifact `app-chart` (see
+Releases). It deploys both apps because each tenant gets one app
+stack; per-app charts would force the Crossplane Composition to
+coordinate two releases instead of one.
+
+The Composition in
+[`platform-gitops`](https://github.com/INENI-PT-GROUP-B/platform-gitops/blob/main/crossplane/compositions/xtenant-default.yaml)
+(S3-04) fills the contract values at onboarding:
+
+| Value                                     | Source                                                                            |
+| ----------------------------------------- | --------------------------------------------------------------------------------- |
+| `tenant`, `host`                          | tenant `XR` spec                                                                  |
+| `db.secretName`                           | CloudNativePG-generated secret in the tenant namespace                            |
+| `image.backend.tag`, `image.frontend.tag` | `values/app-version.yaml` in `platform-gitops` (S3-10 global rollout mechanism)   |
+| `basicAuthMiddlewareRef`                  | per-tenant Traefik `Middleware` created by the Composition                        |
+| `imagePullSecrets`                        | shared `ghcr-pull-secret` synced by ESO from GSM into each tenant namespace       |
+
+Local rendering for sanity-checking the templates:
+
+```bash
+helm template demo chart/ \
+  --set tenant=demo \
+  --set host=demo.fhuebung.lol \
+  --set image.backend.tag=v0.1.0 \
+  --set image.frontend.tag=v0.1.0
+```
+
 ## Releases
 
 Releases are cut by pushing a `vX.Y.Z` git tag. On a tag, the
